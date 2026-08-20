@@ -45,7 +45,7 @@
             box-shadow: 0 0 10px #00ff00;
         }
 
-        /* 공통 화면 컨테이너 (처음엔 기본 숨김) */
+        /* 공통 화면 컨테이너 */
         .screen {
             display: none;
             flex-direction: column;
@@ -56,11 +56,12 @@
             padding: 20px;
             box-sizing: border-box;
             text-align: center;
+            position: relative;
         }
 
         /* [화면 0] 비밀번호 입력 화면 */
         #password-screen {
-            display: flex; /* 첫 화면만 켬 */
+            display: flex;
             color: #00ff00;
         }
         #password-screen h2 {
@@ -88,7 +89,7 @@
             animation: pulse 1.5s infinite;
         }
 
-        /* [화면 2] 랜섬웨어 경고 화면 (입력창 없음, 대기 화면) */
+        /* [화면 2] 랜섬웨어 경고 화면 */
         #warning-screen {
             color: white;
             background: radial-gradient(circle, #330000 0%, #000000 100%);
@@ -141,11 +142,35 @@
             text-shadow: 0 0 10px #ffff00;
         }
 
-        /* 버튼 밑에 뜨는 스태프 안내 문구 */
         .staff-footer-note {
             margin-top: 15px;
             color: #888;
             font-size: 0.9rem;
+        }
+
+        /* 복호화 시작 화면 */
+        #start-timer-screen {
+            color: #00ff00;
+            border: 5px solid #00ff00;
+        }
+
+        /* ⏱️ 화면 상단 고정 실시간 스톱워치 바 */
+        #timer-bar {
+            display: none;
+            position: fixed;
+            top: 15px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: rgba(0, 0, 0, 0.8);
+            border: 2px solid #ff0000;
+            border-radius: 8px;
+            padding: 8px 20px;
+            font-size: 1.8rem;
+            font-weight: bold;
+            color: #ff0000;
+            text-shadow: 0 0 10px #ff0000;
+            box-shadow: 0 0 15px rgba(255, 0, 0, 0.4);
+            z-index: 9999;
         }
 
         /* [화면 3] 엔딩 화면 */
@@ -177,6 +202,9 @@
 </head>
 <body>
 
+    <!-- ⏱️ 상단 실시간 스톱워치 (타이머 시작 시 화면에 고정 노출) -->
+    <div id="timer-bar">00:00:00</div>
+
     <!-- [화면 0] 입장 비밀번호 입력 화면 -->
     <div id="password-screen" class="screen">
         <h2>ENTER ACCESS CODE</h2>
@@ -189,60 +217,59 @@
         <button id="download-button">방탈출.exe 다운로드하기</button>
     </div>
 
-    <!-- [화면 2] 랜섬웨어 경고 화면 (입력창 없음, 대기 화면) -->
+    <!-- [화면 2] 랜섬웨어 경고 화면 -->
     <div id="warning-screen" class="screen">
-        <div id="warning-text">시스템 감염 완료!</div>
-        <div style="margin-bottom: 30px; color: #ddd; font-size: 1.1rem;">데이터가 암호화되었습니다.<br></div>
+        <div id="warning-text">랜섬웨어 감염 완료!</div>
+        <div style="margin-bottom: 30px; color: #ddd; font-size: 1.1rem;">파일이 암호화되었습니다.</div>
         <p style="color: #666; font-size: 0.8rem;">(대기 중...)</p>
     </div>
 
-    <!-- [수정된 화면 2-1] 1차 스태프 확인 화면 -->
+    <!-- [화면 2-1] 복호화 시작 버튼 화면 (여기서 스톱워치 시작) -->
+    <div id="start-timer-screen" class="screen">
+        <h2>시스템 감염 처리</h2>
+        <div style="margin: 20px 0; color: #ddd;">복호화를 시작하려면 아래 버튼을 누르십시오.<br>버튼을 누름과 동시에 시간 측정이 시작됩니다.</div>
+        <button id="start-timer-button" class="custom-btn" style="font-size: 1.3rem; padding: 15px 30px;">복호화 하기</button>
+    </div>
+
+    <!-- [화면 2-2] 1차 스태프 확인 화면 -->
     <div id="staff-screen-1" class="screen staff-screen">
-        <div class="staff-title">⚠️ WARNING (1/2)</div>
-        <div class="staff-desc">1차 인증 코드를 입력해야 진행됩니다.</div>
-        
-        <!-- 입력 영역 (처음엔 보임) -->
+        <div class="staff-title">⚠️ DESCYPT CODE (1/2)</div>
+        <div class="staff-desc">1차 복호화 코드를 입력해야 합니다.</div>
         <div id="staff-input-area-1">
-            <input type="password" id="staff-input-1" class="custom-input staff-input" placeholder="1차 암호" autocomplete="off">
+            <input type="password" id="staff-input-1" class="custom-input staff-input" placeholder="1차 복호화 코드" autocomplete="off">
             <button id="staff-submit-1" class="custom-btn staff-btn">입력 완료</button>
         </div>
-
-        <!-- 완료 영역 (비번 맞으면 보임) -->
         <div id="staff-complete-area-1" style="display: none;">
-            <div class="staff-complete-msg">비밀번호 입력 완료.</div>
+            <div class="staff-complete-msg">1차 복호화 코드 입력 완료</div>
             <button class="custom-btn staff-btn" onclick="switchScreen('staff-screen-2')">다음으로 넘어가기</button>
             <div class="staff-footer-note">이 화면을 스태프에게 보여주세요.</div>
         </div>
     </div>
 
-    <!-- [수정된 화면 2-2] 2차 스태프 확인 화면 -->
+    <!-- [화면 2-3] 2차 스태프 확인 화면 -->
     <div id="staff-screen-2" class="screen staff-screen">
-        <div class="staff-title">⚠️ WARNING (2/2)</div>
-        <div class="staff-desc">2차 인증 코드를 입력해야 진행됩니다.</div>
-        
-        <!-- 입력 영역 -->
+        <div class="staff-title">⚠️ DESCYPT CODE (2/2)</div>
+        <div class="staff-desc">2차 복호화 코드를 입력해야 합니다.</div>
         <div id="staff-input-area-2">
-            <input type="password" id="staff-input-2" class="custom-input staff-input" placeholder="2차 암호" autocomplete="off">
+            <input type="password" id="staff-input-2" class="custom-input staff-input" placeholder="2차 복호화 코드" autocomplete="off">
             <button id="staff-submit-2" class="custom-btn staff-btn">입력 완료</button>
         </div>
-
-        <!-- 완료 영역 -->
         <div id="staff-complete-area-2" style="display: none;">
-            <div class="staff-complete-msg">비밀번호 입력 완료.</div>
+            <div class="staff-complete-msg">2차 복호화 코드 입력 완료</div>
             <button class="custom-btn staff-btn" onclick="switchScreen('final-code-screen')">다음으로 넘어가기</button>
             <div class="staff-footer-note">이 화면을 스태프에게 보여주세요.</div>
         </div>
     </div>
 
-    <!-- [화면 2-3] 최종 복구 코드 입력 화면 -->
+    <!-- [화면 2-4] 최종 복구 코드 입력 화면 -->
     <div id="final-code-screen" class="screen staff-screen" style="border-color: #00ff00;">
         <div class="staff-title" style="color: #00ff00;">시스템 복구 활성화</div>
-        <div class="staff-desc">승인이 완료되었습니다.<br>4자리 시스템 복구 코드를 입력하십시오.</div>
+        <div class="staff-desc">복호화 코드 입력이 감지되었습니다<br>4자리 시스템 복구 코드를 입력하십시오.</div>
         <input type="password" id="final-code-input" class="custom-input" placeholder="4자리 코드 입력" maxlength="4" autocomplete="off">
         <button id="final-code-submit" class="custom-btn">코드 전송</button>
     </div>
 
-    <!-- [화면 3] 엔딩 출력 화면 -->
+    <!-- [화면 3] 엔딩 출력 화면 (최종 기록 출력) -->
     <div id="ending-screen" class="screen">
         <div id="ending-title">결과 타이틀</div>
         <div id="ending-desc">결과 상세 설명</div>
@@ -250,7 +277,7 @@
 
     <script>
         /* ========================================================
-           ★ [스태프 전용 비밀번호 관리] 필요시 변경해 쓰세요!
+           ★ [스태프 전용 비밀번호 관리]
         ======================================================== */
         const MAIN_PASSWORD = 'TR2026';   // 최초 입장 코드
         const STAFF_PASS_1  = '63158';     // 1차 스태프 비밀번호
@@ -258,6 +285,8 @@
         const SUCCESS_CODE  = '0291';     // 플레이어 정답 4자리 코드
         const TRAP_CODE     = '9343';     // 플레이어 함정 4자리 코드
         /* ======================================================== */
+
+        let timerInterval;
 
         // 1. 입장 코드 확인
         document.getElementById('password-submit').addEventListener('click', checkPassword);
@@ -279,49 +308,87 @@
             document.body.style.backgroundColor = '#1a0000';
             if (navigator.vibrate) navigator.vibrate([100, 50, 100, 50, 300]);
 
-            // 1.5초 후 자동으로 1차 스태프 인증 화면으로 전환
+            // 1.5초 후 자동으로 [복호화 하기] 버튼 화면으로 이동
             setTimeout(() => {
-                switchScreen('staff-screen-1');
+                switchScreen('start-timer-screen');
             }, 1500);
         });
 
-        // 3. 1차 스태프 승인 판별
+        // 3. 복호화 버튼 누르면 스톱워치 시작 + 1차 스태프 화면으로 이동
+        document.getElementById('start-timer-button').addEventListener('click', function() {
+            startTimer();
+            switchScreen('staff-screen-1');
+        });
+
+        // ⏱️ 스톱워치 시작 함수 (백그라운드/종료 대응)
+        function startTimer() {
+            const startTime = Date.now();
+            localStorage.setItem('escapeStartTime', startTime); // 브라우저 저장소에 기록
+            
+            document.getElementById('timer-bar').style.display = 'block'; // 화면 상단 스톱워치 표시
+            updateTimer();
+            timerInterval = setInterval(updateTimer, 1000);
+        }
+
+        // 스톱워치 시간 업데이트
+        function updateTimer() {
+            const storedStartTime = localStorage.getItem('escapeStartTime');
+            if (!storedStartTime) return;
+
+            const elapsedTime = Date.now() - parseInt(storedStartTime);
+
+            let seconds = Math.floor(elapsedTime / 1000);
+            let minutes = Math.floor(seconds / 60);
+            let hours = Math.floor(minutes / 60);
+
+            seconds = (seconds % 60).toString().padStart(2, '0');
+            minutes = (minutes % 60).toString().padStart(2, '0');
+            hours = hours.toString().padStart(2, '0');
+
+            document.getElementById('timer-bar').innerText = `${hours}:${minutes}:${seconds}`;
+        }
+
+        // 4. 1차 스태프 승인 판별
         document.getElementById('staff-submit-1').addEventListener('click', checkStaff1);
         document.getElementById('staff-input-1').addEventListener('keypress', (e) => { if (e.key === 'Enter') checkStaff1(); });
 
         function checkStaff1() {
             const input = document.getElementById('staff-input-1').value;
             if (input === STAFF_PASS_1) {
-                // 비번 맞으면 입력창 숨기고 완료 영역 띄우기
                 document.getElementById('staff-input-area-1').style.display = 'none';
                 document.getElementById('staff-complete-area-1').style.display = 'block';
             } else {
-                alert('스태프 암호가 일치하지 않습니다.');
+                alert('복호화 코드가 일치하지 않습니다.');
                 document.getElementById('staff-input-1').value = '';
             }
         }
 
-        // 4. 2차 스태프 승인 판별
+        // 5. 2차 스태프 승인 판별
         document.getElementById('staff-submit-2').addEventListener('click', checkStaff2);
         document.getElementById('staff-input-2').addEventListener('keypress', (e) => { if (e.key === 'Enter') checkStaff2(); });
 
         function checkStaff2() {
             const input = document.getElementById('staff-input-2').value;
             if (input === STAFF_PASS_2) {
-                // 비번 맞으면 입력창 숨기고 완료 영역 띄우기
                 document.getElementById('staff-input-area-2').style.display = 'none';
                 document.getElementById('staff-complete-area-2').style.display = 'block';
             } else {
-                alert('스태프 암호가 일치하지 않습니다.');
+                alert('복호화 코드가 일치하지 않습니다.');
                 document.getElementById('staff-input-2').value = '';
             }
         }
 
-        // 5. 플레이어 4자리 코드 판별 (최종 갈림길)
+        // 6. 플레이어 4자리 코드 판별 (최종 정답 / 함정 / 오답)
         document.getElementById('final-code-submit').addEventListener('click', checkUserCode);
         document.getElementById('final-code-input').addEventListener('keypress', (e) => { if (e.key === 'Enter') checkUserCode(); });
 
         function checkUserCode() {
+            // 스톱워치 정지 및 기록 저장
+            clearInterval(timerInterval);
+            const finalTime = document.getElementById('timer-bar').innerText;
+            document.getElementById('timer-bar').style.display = 'none'; // 상단 타이머 숨기기
+            localStorage.removeItem('escapeStartTime'); // 저장 기록 초기화
+
             const input = document.getElementById('final-code-input').value;
             const endingScreen = document.getElementById('ending-screen');
             const endingTitle = document.getElementById('ending-title');
@@ -330,27 +397,46 @@
             document.querySelectorAll('.screen').forEach(s => s.style.display = 'none');
             endingScreen.style.display = 'flex';
 
+            // 정답 코드 입력 시
             if (input === SUCCESS_CODE) {
                 document.body.style.backgroundColor = '#001a00';
                 endingTitle.style.color = '#00ff00';
                 endingTitle.innerText = '🔓 해제되었습니다!';
                 endingDesc.style.color = '#ffffff';
-                endingDesc.innerHTML = '축하합니다! 시스템 제한이 해제되었습니다.<br>방에서 안전하게 탈출하세요!';
+                endingDesc.innerHTML = `축하합니다! 시스템 제한이 해제되었습니다.<br>방에서 안전하게 탈출하세요.<br><br><span style="font-size:1.6rem; color:#00ff00;">⏱️ 최종 탈출 시간: ${finalTime}</span>`;
+            
+            // 함정 코드 입력 시
             } else if (input === TRAP_CODE) {
                 document.body.style.backgroundColor = '#330000';
                 endingTitle.style.color = '#ff0000';
                 endingTitle.innerText = '💥 GAME OVER';
                 endingDesc.style.color = '#ff8888';
-                endingDesc.innerHTML = '함정에 걸리셨습니다!<br>시스템이 영구히 격리됩니다.';
+                endingDesc.innerHTML = `함정에 걸리셨습니다!<br>모든 파일이 소실되었습니다.<br><br><span style="font-size:1.6rem; color:#ff0000;">⏱️ 경과 시간: ${finalTime}</span>`;
+            
+            // 그 외 오답 입력 시
             } else {
-                endingDesc.innerHTML = '잘못된 복구 코드를 입력하여 데이터가 영구 소실되었습니다.<br>방에서 나갈 수 없습니다.';
+                document.body.style.backgroundColor = '#220000';
+                endingTitle.style.color = '#ffaa00';
+                endingTitle.innerText = '❌ 복구 실패';
+                endingDesc.style.color = '#ffffff';
+                endingDesc.innerHTML = `잘못된 복구 코드로 모든 파일이 잠겼습니다.<br><br><span style="font-size:1.6rem; color:#ffaa00;">⏱️ 경과 시간: ${finalTime}</span>`;
             }
         }
 
-        // 화면 전환 유틸리티 함수
+        // 화면 전환 유틸리티
         function switchScreen(screenId) {
             document.querySelectorAll('.screen').forEach(s => s.style.display = 'none');
             document.getElementById(screenId).style.display = 'flex';
+        }
+
+        // 앱/웹페이지 재접속 처리 (화면 꺼짐 대비)
+        window.onload = function() {
+            const storedStartTime = localStorage.getItem('escapeStartTime');
+            if (storedStartTime) {
+                document.getElementById('timer-bar').style.display = 'block';
+                timerInterval = setInterval(updateTimer, 1000);
+                switchScreen('staff-screen-1'); // 재접속 시 1차 스태프 화면으로 이동
+            }
         }
     </script>
 </body>
